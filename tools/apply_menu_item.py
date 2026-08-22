@@ -194,8 +194,11 @@ def main():
     value_addr = _opt(argv, '--value-addr', VALUE_ADDR, lambda x: int(x, 0))
     new_base = _opt(argv, '--new-base', NEW_BASE, lambda x: int(x, 0))
     index = _opt(argv, '--index', INDEX, lambda x: int(x, 0))
-    fi = argv[0] if argv else 'obrazy/main_kod_0x5000.bin'
-    fo = argv[1] if len(argv) > 1 else 'obrazy/main_kod_0x5000_menu.bin'
+    if len(argv) < 2:
+        sys.exit("usage: python apply_menu_item.py <in.bin> <out.bin> "
+                 "[--label ...] [--value-addr ...]\n"
+                 "       see the docstring at the top of this file")
+    fi, fo = argv[0], argv[1]
     data = open(fi, 'rb').read()
     out, rep = build(data, label, value_addr, new_base, index)
     open(fo, 'wb').write(out)

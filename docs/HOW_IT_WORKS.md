@@ -66,10 +66,10 @@ once per restart. That is exactly what several early versions did.
 ```
 
 **Zero bytes of `.bss` are used.** That is not stylistic. An empirical write map of the
-whole image (`emu_mapa_zapisow.py` in the development tree, which fires every one of the
-3820 functions at an emulator and records every SRAM write) found **no contiguous 16-byte
-area in `.bss` that nothing writes to**. An earlier version kept a byte at `0x40009331`,
-which turned out to sit at offset `+0x52` inside a **500-byte text buffer at `0x400092DE`**
+whole image — built by firing every one of the 3820 functions at an emulator and recording
+every SRAM write — found **no contiguous 16-byte area in `.bss` that nothing writes to**.
+An earlier version kept a byte at `0x40009331`, which turned out to sit at offset `+0x52`
+inside a **500-byte text buffer at `0x400092DE`**
 (`FUN_0x576AA` clears it, among other times, when you change the radio station). The
 symptom on the road was a sweep roughly once a minute.
 

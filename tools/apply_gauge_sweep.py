@@ -56,9 +56,9 @@ STATE - TWO WORDS, ZERO BYTES OF .bss
                        item switched off, or with the cluster powered down; reset on
                        every normal working pass
 
-  Do not move this state into .bss. An empirical write map of the whole image
-  (tools/emu_mapa_zapisow.py) found no contiguous 16-byte area in .bss that none of the
-  3820 functions writes to. One earlier version kept a byte at 0x40009331 - which turned
+  Do not move this state into .bss. An empirical write map of the whole image - built by
+  firing every one of the 3820 functions at an emulator and recording every SRAM write -
+  found no contiguous 16-byte area in .bss that nothing writes to. One earlier version kept a byte at 0x40009331 - which turned
   out to sit inside a 500-byte text buffer at 0x400092DE that the firmware clears, among
   other times, when you change the radio station.
 
@@ -348,8 +348,10 @@ assert len(out) == TOTAL_LEN
 
 
 def main():
-    fi = _argv[0] if len(_argv) > 0 else 'obrazy/main_kod_0x5000.bin'
-    fo = _argv[1] if len(_argv) > 1 else 'obrazy/main_kod_0x5000_sweep.bin'
+    if len(_argv) < 2:
+        sys.exit("usage: python apply_gauge_sweep.py <in.bin> <out.bin> [options]\n"
+                 "       see the docstring at the top of this file for the option list")
+    fi, fo = _argv[0], _argv[1]
     d = bytearray(open(fi, 'rb').read())
     co = CAVE - BASE
 

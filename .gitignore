@@ -12,8 +12,10 @@
 *.mot
 *.eep
 *.eeprom
+# ...and any folder people habitually keep dumps in
 dumps/
 firmware/
+images/
 obrazy/
 
 # Python
