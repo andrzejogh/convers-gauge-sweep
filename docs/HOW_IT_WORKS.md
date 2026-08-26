@@ -88,8 +88,24 @@ Why `0x4000BFF4` is trusted, in decreasing order of strength:
 5. The firmware's pattern guard (`FUN_0x150DA`, two callers) covers `0x4000B008..0x4000B7F0`
    and only **reads**, so our writes cannot trip its error path.
 
-The bootloader itself (`0x0..0x5000`) is not in any available dump, so point 1 does not
-cover it — point 2 does.
+6. **The bootloader, checked directly.** Point 1 only covers the application startup, not the
+   bootloader (PBL) at `0x0..0x5000`, which is in no VBF dump — so for a long time only the
+   field evidence in point 2 spoke to it. That gap is now closed.
+   [@wojtkowiak](https://github.com/wojtkowiak) disassembled a JTAG dump of the PBL and checked
+   it both ways. Its reset prologue loads the stack top from a literal `0x4000BEFC`, and all
+   three `SP` writes in the entire 20 480-byte PBL derive from it and grow **down** — so the
+   highest address the PBL stack can reach is `0x4000BEFC`, **244 bytes below** our window.
+   Statically, no PBL literal falls in `0x4000BFF0..0x4000BFFF` (the highest of its 62 SRAM
+   literals is `0x4000BEFC`); dynamically, a full boot from `0x0` through the application
+   (40 M instructions) recorded **381 240** writes into the PBL's own stack window and
+   **zero** into ours.
+
+The bootloader question is therefore settled by point 6 rather than inferred from point 2.
+
+*Caveat: the PBL analysed above was dumped from a donor cluster whose native firmware is 1507;
+the PBL is believed unchanged across the 1412–1507 range. It is treated here as strong
+independent confirmation, not absolute proof — thanks to [@wojtkowiak](https://github.com/wojtkowiak)
+for running it.*
 
 ---
 

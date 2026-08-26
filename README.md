@@ -17,6 +17,14 @@ The current version has been flashed to a real car and works there: exactly one 
 ignition cycle, nothing unexpected while driving, menu behaves correctly. It also passes a 20-check emulator
 suite that runs the cluster's real gauge task (see [docs/TESTING.md](docs/TESTING.md)).
 
+**Update — one open question now closed.** The patch keeps its "sweep already done" marker in
+a 16-byte window at the very top of SRAM, and the one thing earlier evidence could only infer
+was whether the cluster **bootloader** leaves that window alone between restarts.
+[@wojtkowiak](https://github.com/wojtkowiak) disassembled a JTAG dump of the bootloader and
+confirmed it directly: its stack tops out well below the window and it never writes into it
+(details in [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)). Thanks! That turns the strongest
+remaining "we believe" into "we checked".
+
 That is **one car, one firmware build, over days — not months**. It has not yet been
 verified across different vehicles, firmware variants or long-term use. If you flash it,
 please treat yourself as a tester: read [docs/TESTING.md](docs/TESTING.md) first, run it in
@@ -173,6 +181,13 @@ contains your VIN.
 
 If you have a cluster on the bench, a CAN capture, or a different firmware build, that is
 exactly the kind of help this project needs.
+
+## Acknowledgements
+
+- **[@wojtkowiak](https://github.com/wojtkowiak)** — disassembled a JTAG dump of the cluster
+  bootloader (PBL) and confirmed, statically and dynamically, that it never touches the
+  16-byte SRAM window this patch uses for its persistent marker. That independently settled
+  the one memory-safety question the earlier evidence could only infer. Thanks!
 
 ## License
 
